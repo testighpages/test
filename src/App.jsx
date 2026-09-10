@@ -1,80 +1,37 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import "./App.css";
 import ProductCart from "./ProductCart.jsx";
 import Filters from "./Filters.jsx";
 import Cart from "./Cart.jsx";
-import Product from "./Product";
-import image from "./assets/image.png";
+import {
+  dataToProducts,
+  filterProductsByIdType,
+  getAllProductsData,
+} from "./apiHandler.js";
 
 function App({ cart = [], setCart, isCartOpen = false, onCloseCart }) {
-  const zhizha = [
-    new Product({
-      id: "zh-01",
-      text: "жижа А",
-      image,
-      price: 260,
-      variants: [{ name: "30 мл", stock: 4 }, { name: "60 мл", stock: 3 }, { name: "120 мл", stock: 3 }],
-    }),
-    new Product({
-      id: "zh-02",
-      text: "жижа B",
-      image,
-      price: 320,
-      variants: [{ name: "30 мл", stock: 5 }, { name: "60 мл", stock: 5 }],
-    }),
-    new Product({
-      id: "zh-03",
-      text: "жижа C",
-      image,
-      price: 290,
-      variants: [{ name: "30 мл", stock: 6 }, { name: "50 мл", stock: 4 }],
-    }),
-    new Product({
-      id: "zh-04",
-      text: "жижа D",
-      image,
-      price: 340,
-      variants: [{ name: "30 мл", stock: 7 }, { name: "90 мл", stock: 3 }],
-    }),
-  ];
-  const rasxodniki = [
-    new Product({
-      id: "rs-01",
-      text: "расходник E",
-      image,
-      price: 120,
-      variants: [{ name: "1 шт", stock: 8 }, { name: "3 шт", stock: 7 }, { name: "10 шт", stock: 5 }],
-    }),
-    new Product({
-      id: "rs-02",
-      text: "расходник F",
-      image,
-      price: 150,
-      variants: [{ name: "1 шт", stock: 12 }, { name: "5 шт", stock: 8 }],
-    }),
-  ];
-  const ustroystva = [
-    new Product({
-      id: "us-01",
-      text: "устройство G",
-      image,
-      price: 700,
-      variants: [{ name: "базовая", stock: 3 }, { name: "pro", stock: 2 }],
-    }),
-    new Product({
-      id: "us-02",
-      text: "устройство H",
-      image,
-      price: 840,
-      variants: [{ name: "базовая", stock: 3 }, { name: "max", stock: 2 }],
-    }),
-  ];
+  const [products, setProducts] = useState([]);
 
-  const [filters] = useState([
-    { name: "жидкости", products: zhizha },
-    { name: "расходники", products: rasxodniki },
-    { name: "устройства", products: ustroystva },
-  ]);
+  useEffect(() => {
+    async function f() {
+      try {
+        const data = await getAllProductsData();
+        const formattedProducts = dataToProducts(data);
+        setProducts(formattedProducts);
+      } catch (error) {
+        console.error("Ошибка загрузки:", error);
+      }
+    }
+    f();
+  }, []);
+
+  const filters = useMemo(() => {
+    return [
+      { name: "жидкости", products: filterProductsByIdType("zh", products) },
+      { name: "расходники", products: filterProductsByIdType("rs", products) },
+      { name: "устройства", products: filterProductsByIdType("us", products) },
+    ];
+  }, [products]);
   const [selectedFilter, setSelectedFilter] = useState("all");
 
   const getCartKey = (product, variant) => {
@@ -114,7 +71,8 @@ function App({ cart = [], setCart, isCartOpen = false, onCloseCart }) {
       const quantityToAdd = Math.min(qty, availableQty);
       if (quantityToAdd === 0) return prev;
 
-      if (idx === -1) return [...prev, { product, variant, qty: quantityToAdd }];
+      if (idx === -1)
+        return [...prev, { product, variant, qty: quantityToAdd }];
 
       const next = [...prev];
       next[idx] = { ...next[idx], qty: next[idx].qty + quantityToAdd };
