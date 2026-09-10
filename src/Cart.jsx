@@ -1,3 +1,4 @@
+import { use } from "react";
 import "./Cart.css";
 
 function Cart({
@@ -11,6 +12,26 @@ function Cart({
   totalPrice = 0,
 }) {
   if (!isCartOpen) return null;
+
+  const getUserName = () => {
+    const tg = window.Telegram?.WebApp;
+
+    if (!tg) {
+      alert("Откройте приложение внутри Telegram");
+      return;
+    }
+
+    // 2. Достаем юзернейм и сырые данные авторизации
+    const username = tg.initDataUnsafe?.user?.username;
+    const initData = tg.initData;
+
+    // 3. Проверяем, есть ли у пользователя юзернейм
+    if (!username) {
+      tg.showAlert("Здесь будет ввод имени для лохов будет без юза");
+      return;
+    }
+    return username;
+  };
 
   return (
     <div className="cart-overlay" onClick={onCloseCart}>
@@ -86,6 +107,9 @@ function Cart({
                 className="cart-order"
                 type="button"
                 onClick={() => {
+                  const username = getUserName();
+                  window.Telegram?.WebApp.showAlert(username);
+                  console.log(username);
                   //сделать отправку сообщения с координатами и видео где забрать
                   //fetch для отправки заказа
                 }}
