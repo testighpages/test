@@ -13,16 +13,6 @@ function App({ cart = [], setCart, isCartOpen = false, onCloseCart }) {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    async function f() {
-      try {
-        const data = await getAllProductsData();
-        const formattedProducts = dataToProducts(data);
-        setProducts(formattedProducts);
-      } catch (error) {
-        console.error("Ошибка загрузки:", error);
-      }
-    }
-    f();
     setProducts([
     {
       id: "zh-01",
@@ -99,6 +89,17 @@ function App({ cart = [], setCart, isCartOpen = false, onCloseCart }) {
       ],
     },
   ]);
+    async function f() {
+      try {
+        const data = await getAllProductsData();
+        const formattedProducts = dataToProducts(data);
+        setProducts(formattedProducts);
+      } catch (error) {
+        console.error("Ошибка загрузки:", error);
+      }
+    }
+    try{f();}catch(error){};
+    
   }, []);
 
   const filters = useMemo(() => {
