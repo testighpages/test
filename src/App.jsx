@@ -23,6 +23,82 @@ function App({ cart = [], setCart, isCartOpen = false, onCloseCart }) {
       }
     }
     f();
+    setProducts([
+    {
+      id: "zh-01",
+      text: "жижа А",
+      price: 260,
+      variants: [
+        { id: "zh-01-30", name: "30 мл", stock: 4 },
+        { id: "zh-01-60", name: "60 мл", stock: 3 },
+        { id: "zh-01-120", name: "120 мл", stock: 3 },
+      ],
+    },
+    {
+      id: "zh-02",
+      text: "жижа B",
+      price: 320,
+      variants: [
+        { id: "zh-02-30", name: "30 мл", stock: 5 },
+        { id: "zh-02-60", name: "60 мл", stock: 5 },
+      ],
+    },
+    {
+      id: "zh-03",
+      text: "жижа C",
+      price: 290,
+      variants: [
+        { id: "zh-03-30", name: "30 мл", stock: 6 },
+        { id: "zh-03-50", name: "50 мл", stock: 4 },
+      ],
+    },
+    {
+      id: "zh-04",
+      text: "жижа D",
+      price: 340,
+      variants: [
+        { id: "zh-04-30", name: "30 мл", stock: 7 },
+        { id: "zh-04-90", name: "90 мл", stock: 3 },
+      ],
+    },
+    {
+      id: "rs-01",
+      text: "расходник E",
+      price: 120,
+      variants: [
+        { id: "rs-01-1", name: "1 шт", stock: 8 },
+        { id: "rs-01-3", name: "3 шт", stock: 7 },
+        { id: "rs-01-10", name: "10 шт", stock: 5 },
+      ],
+    },
+    {
+      id: "rs-02",
+      text: "расходник F",
+      price: 150,
+      variants: [
+        { id: "rs-02-1", name: "1 шт", stock: 12 },
+        { id: "rs-02-5", name: "5 шт", stock: 8 },
+      ],
+    },
+    {
+      id: "us-01",
+      text: "устройство G",
+      price: 700,
+      variants: [
+        { id: "us-01-basic", name: "базовая", stock: 3 },
+        { id: "us-01-pro", name: "pro", stock: 2 },
+      ],
+    },
+    {
+      id: "us-02",
+      text: "устройство H",
+      price: 840,
+      variants: [
+        { id: "us-02-basic", name: "базовая", stock: 3 },
+        { id: "us-02-max", name: "max", stock: 2 },
+      ],
+    },
+  ]);
   }, []);
 
   const filters = useMemo(() => {
