@@ -4,6 +4,11 @@ import "./index.css";
 import App from "./App.jsx";
 import Header from "./Header.jsx";
 
+// Инициализируем Telegram WebApp если он доступен
+if (window.Telegram?.WebApp) {
+  window.Telegram.WebApp.ready();
+}
+
 function ShopApp() {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
