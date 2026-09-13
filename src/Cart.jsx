@@ -14,7 +14,6 @@ function Cart({
   if (!isCartOpen) return null;
 
   const getUserName = () => {
-    // Проверяем есть ли Telegram WebApp
     if (!window.Telegram?.WebApp) {
       alert("Откройте приложение внутри Telegram");
       return null;
@@ -22,12 +21,12 @@ function Cart({
 
     const tg = window.Telegram.WebApp;
 
-    // Достаем юзернейм из initDataUnsafe (это сырые данные авторизации)
     const username = tg.initDataUnsafe?.user?.username;
 
-    // Проверяем, есть ли у пользователя юзернейм
     if (!username) {
-      tg.showAlert("Здесь будет ввод имени для лохов будет без юза");
+      tg.showAlert(
+        "На вашем аккаунте Telegram не указан username. Пожалуйста, установите его в настройках профиля.",
+      );
       return null;
     }
     return username;
@@ -110,10 +109,9 @@ function Cart({
                   const username = getUserName();
                   if (username) {
                     window.Telegram?.WebApp.showAlert(`Заказ для @${username}`);
-                    console.log(username);
-                    //сделать отправку сообщения с координатами и видео где забрать
-                    //fetch для отправки заказа
                   }
+                  //сделать отправку сообщения с координатами и видео где забрать
+                  //fetch для отправки заказа
                 }}
               >
                 Заказать
