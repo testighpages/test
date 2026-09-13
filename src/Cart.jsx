@@ -19,7 +19,7 @@ function Cart({
       return null;
     }
 
-    const tg = window.Telegram.WebApp;
+    /*const tg = window.Telegram.WebApp;
 
     const username = tg.initDataUnsafe?.user?.username;
 
@@ -29,7 +29,8 @@ function Cart({
       );
       return null;
     }
-    return username;
+    return username;*/
+    return "username";
   };
 
   return (
@@ -105,13 +106,46 @@ function Cart({
               <button
                 className="cart-order"
                 type="button"
-                onClick={() => {
+                onClick={async () => {
                   const username = getUserName();
-                  if (username) {
-                    window.Telegram?.WebApp.showAlert(`Заказ для @${username}`);
+                  if (!username) return;
+
+                  try {
+                    const response = await fetch(
+                      "http://localhost:3000/api/orders",
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          items: cart.map(({ product, variant, qty }) => ({
+                            productId: product.id,
+                            variantId: variant?.id || product.variants[0]?.id,
+                            quantity: qty,
+                          })),
+                          userData: { name: username },
+                        }),
+                      },
+                    );
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                      window.Telegram?.WebApp.showAlert(
+                        `Ошибка: ${data.message}`,
+                      );
+                      return;
+                    }
+
+                    window.Telegram?.WebApp.showAlert(
+                      `Заказ создан! ID: ${data.id}`,
+                    );
+                    onClear();
+                  } catch (err) {
+                    console.error("Ошибка отправки заказа:", err);
+                    window.Telegram?.WebApp.showAlert(`Ошибка: ${err.message}`);
                   }
-                  //сделать отправку сообщения с координатами и видео где забрать
-                  //fetch для отправки заказа
                 }}
               >
                 Заказать
