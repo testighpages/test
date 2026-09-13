@@ -14,23 +14,23 @@ function Cart({
   if (!isCartOpen) return null;
 
   const getUserName = () => {
-    // Проверяем есть ли Telegram WebApp
     if (!window.Telegram?.WebApp) {
       alert("Откройте приложение внутри Telegram");
       return null;
     }
 
-    const tg = window.Telegram.WebApp;
+    /*const tg = window.Telegram.WebApp;
 
-    // Достаем юзернейм из initDataUnsafe (это сырые данные авторизации)
     const username = tg.initDataUnsafe?.user?.username;
 
-    // Проверяем, есть ли у пользователя юзернейм
     if (!username) {
-      tg.showAlert("Здесь будет ввод имени для лохов будет без юза");
+      tg.showAlert(
+        "На вашем аккаунте Telegram не указан username. Пожалуйста, установите его в настройках профиля.",
+      );
       return null;
     }
-    return username;
+    return username;*/
+    return "username";
   };
 
   return (
@@ -106,13 +106,45 @@ function Cart({
               <button
                 className="cart-order"
                 type="button"
-                onClick={() => {
+                onClick={async () => {
                   const username = getUserName();
-                  if (username) {
-                    window.Telegram?.WebApp.showAlert(`Заказ для @${username}`);
-                    console.log(username);
-                    //сделать отправку сообщения с координатами и видео где забрать
-                    //fetch для отправки заказа
+                  if (!username) return;
+
+                  try {
+                    const response = await fetch(
+                      "http://localhost:3000/api/orders",
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          items: cart.map(({ product, variant, qty }) => ({
+                            productId: product.id,
+                            variantId: variant?.id || product.variants[0]?.id,
+                            quantity: qty,
+                          })),
+                          userData: { name: username },
+                        }),
+                      },
+                    );
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                      window.Telegram?.WebApp.showAlert(
+                        `Ошибка: ${data.message}`,
+                      );
+                      return;
+                    }
+
+                    window.Telegram?.WebApp.showAlert(
+                      `Заказ создан! ID: ${data.id}`,
+                    );
+                    onClear();
+                  } catch (err) {
+                    console.error("Ошибка отправки заказа:", err);
+                    window.Telegram?.WebApp.showAlert(`Ошибка: ${err.message}`);
                   }
                 }}
               >
