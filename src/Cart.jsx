@@ -107,6 +107,9 @@ function Cart({
                 className="cart-order"
                 type="button"
                 onClick={async () => {
+                  let deliveryTime;
+                  //сделать всплывашку по которой можно будет выбрать время
+
                   const username = getUserName();
                   if (!username) return;
 
@@ -124,7 +127,10 @@ function Cart({
                             variantId: variant?.id || product.variants[0]?.id,
                             quantity: qty,
                           })),
-                          userData: { name: username },
+                          userData: {
+                            name: username,
+                            deliveryTime: deliveryTime,
+                          },
                         }),
                       },
                     );

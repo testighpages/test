@@ -1,0 +1,63 @@
+import { useState } from "react";
+import { useCallback } from "react";
+
+function TimeChooseDisplay() {
+  const [hours, setHours] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+  const [errorText, setErrorText] = useState("");
+
+  const validateTime = (h, m) => {
+    const now = new Date();
+    const nowTotalMinutes = now.getHours() * 60 + now.getMinutes();
+    if (h * 60 + m > nowTotalMinutes) {
+      if (h * 60 + m + 15 < nowTotalMinutes) {
+        return false;
+      }
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  return (
+    <>
+      <div>
+        <h1>Введите время доставки</h1>
+      </div>
+      <div style={{ display: "flex" }}>
+        <input
+          type="number"
+          min={0}
+          max={23}
+          placeholder="ЧЧ"
+          value={hours}
+          onChange={(e) => {
+            setHours(e.target.value);
+            setErrorText("");
+          }}
+        ></input>
+        <input
+          type="number"
+          min={0}
+          max={59}
+          placeholder="ММ"
+          value={minutes}
+          onChange={(e) => {
+            setMinutes(e.target.value);
+            setErrorText("");
+          }}
+        ></input>
+      </div>
+      <p>{errorText}</p>
+      <button
+        onClick={() => {
+          validateTime(h, m);
+        }}
+      >
+        Выбрать
+      </button>
+    </>
+  );
+}
+
+export default TimeChooseDisplay;
