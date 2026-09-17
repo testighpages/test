@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useCallback } from "react";
 
 function TimeChooseDisplay() {
   const [hours, setHours] = useState(0);
@@ -11,10 +10,14 @@ function TimeChooseDisplay() {
     const nowTotalMinutes = now.getHours() * 60 + now.getMinutes();
     if (h * 60 + m > nowTotalMinutes) {
       if (h * 60 + m + 15 < nowTotalMinutes) {
+        setErrorText(
+          "Время должно быть как минимум через 15 минут от времени заказа",
+        );
         return false;
       }
       return true;
     } else {
+      setErrorText("Время доставки должно быть позже чем нынешнее время");
       return false;
     }
   };
@@ -36,6 +39,7 @@ function TimeChooseDisplay() {
             setErrorText("");
           }}
         ></input>
+        <p>:</p>
         <input
           type="number"
           min={0}
