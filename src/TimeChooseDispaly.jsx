@@ -22,9 +22,18 @@ function TimeChooseDisplay({
   const validateTime = (h, m) => {
     const now = new Date();
     const nowTotalMinutes = now.getHours() * 60 + now.getMinutes();
-    const selectedTotalMinutes = Number(h) * 60 + Number(m);
+    const hoursValue = Number(h);
+    const minutesValue = Number(m);
+    const selectedTotalMinutes = hoursValue * 60 + minutesValue;
 
-    if (Number.isNaN(selectedTotalMinutes) || selectedTotalMinutes < 0) {
+    if (
+      !Number.isInteger(hoursValue) ||
+      !Number.isInteger(minutesValue) ||
+      hoursValue < 0 ||
+      hoursValue > 23 ||
+      minutesValue < 0 ||
+      minutesValue > 59
+    ) {
       setErrorText("Введите корректное время доставки");
       return false;
     }
