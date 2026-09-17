@@ -23,7 +23,7 @@ function Cart({
       return null;
     }
 
-    /*const tg = window.Telegram.WebApp;
+    const tg = window.Telegram.WebApp;
 
     const username = tg.initDataUnsafe?.user?.username;
 
@@ -33,8 +33,7 @@ function Cart({
       );
       return null;
     }
-    return username;*/
-    return "username";
+    return username;
   };
 
   const handleTimeSelect = (selectedTime) => {
