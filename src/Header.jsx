@@ -1,5 +1,5 @@
 import React from "react";
-import "./Header.css";
+import "./styles/Header.css";
 import cartImg from "./assets/cart.png";
 
 function Header({ cartCount = 0, onCartToggle }) {
