@@ -1,6 +1,10 @@
 import { useState } from "react";
 
-function TimeChooseDisplay() {
+function TimeChooseDisplay({ time, isWindowOpen = false }) {
+  if (!isWindowOpen) {
+    return null;
+  }
+
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [errorText, setErrorText] = useState("");
@@ -55,7 +59,10 @@ function TimeChooseDisplay() {
       <p>{errorText}</p>
       <button
         onClick={() => {
-          validateTime(h, m);
+          if (validateTime(h, m)) {
+            time = { hours, minutes };
+            isWindowOpen = false;
+          }
         }}
       >
         Выбрать
