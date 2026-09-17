@@ -1,5 +1,5 @@
-import { use } from "react";
-import "./Cart.css";
+import { useState } from "react";
+import "./styles/Cart.css";
 import TimeChooseDisplay from "./TimeChooseDispaly";
 
 function Cart({
@@ -12,6 +12,9 @@ function Cart({
   totalItems = 0,
   totalPrice = 0,
 }) {
+  const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
+  const [deliveryTime, setDeliveryTime] = useState(null);
+
   if (!isCartOpen) return null;
 
   const getUserName = () => {
@@ -32,6 +35,16 @@ function Cart({
     }
     return username;*/
     return "username";
+  };
+
+  const handleTimeSelect = (selectedTime) => {
+    setDeliveryTime(selectedTime);
+    setIsTimePickerOpen(false);
+  };
+
+  const formatDeliveryTime = (time) => {
+    if (!time) return "Не выбрано";
+    return `${String(time.hours).padStart(2, "0")}:${String(time.minutes).padStart(2, "0")}`;
   };
 
   return (
@@ -99,6 +112,16 @@ function Cart({
                   <span>Итого</span>
                   <strong>{totalPrice} ₽</strong>
                 </div>
+                <div className="cart-delivery-row">
+                  <span>Время</span>
+                  <button
+                    type="button"
+                    className="cart-time-button"
+                    onClick={() => setIsTimePickerOpen(true)}
+                  >
+                    {formatDeliveryTime(deliveryTime)}
+                  </button>
+                </div>
               </div>
 
               <div className="cart-actions">
@@ -109,11 +132,13 @@ function Cart({
                   className="cart-order"
                   type="button"
                   onClick={async () => {
-                    let deliveryTime;
-                    //сделать всплывашку по которой можно будет выбрать время
-
                     const username = getUserName();
                     if (!username) return;
+
+                    if (!deliveryTime) {
+                      setIsTimePickerOpen(true);
+                      return;
+                    }
 
                     try {
                       const response = await fetch(
@@ -131,7 +156,7 @@ function Cart({
                             })),
                             userData: {
                               name: username,
-                              deliveryTime: deliveryTime,
+                              deliveryTime,
                             },
                           }),
                         },
@@ -149,6 +174,7 @@ function Cart({
                       window.Telegram?.WebApp.showAlert(
                         `Заказ создан! ID: ${data.id}`,
                       );
+                      setDeliveryTime(null);
                       onClear();
                     } catch (err) {
                       console.error("Ошибка отправки заказа:", err);
@@ -165,7 +191,13 @@ function Cart({
           )}
         </div>
       </div>
-      <TimeChooseDisplay time={deliveryTime} />
+
+      <TimeChooseDisplay
+        isOpen={isTimePickerOpen}
+        onClose={() => setIsTimePickerOpen(false)}
+        onSelect={handleTimeSelect}
+        selectedTime={deliveryTime}
+      />
     </>
   );
 }
