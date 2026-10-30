@@ -17,23 +17,23 @@ function Cart({
 
   if (!isCartOpen) return null;
 
-  const getUserName = () => {
+  const getTelegramUser = () => {
     if (!window.Telegram?.WebApp) {
       alert("Откройте приложение внутри Telegram");
       return null;
     }
 
     const tg = window.Telegram.WebApp;
+    const user = tg.initDataUnsafe?.user;
 
-    const username = tg.initDataUnsafe?.user?.username;
-
-    if (!username) {
+    if (!user) {
       tg.showAlert(
-        "На вашем аккаунте Telegram не указан username. Пожалуйста, установите его в настройках профиля.",
+        "Не удалось получить данные пользователя Telegram. Попробуйте открыть приложение повторно.",
       );
       return null;
     }
-    return username;
+
+    return user;
   };
 
   const handleTimeSelect = (selectedTime) => {
@@ -131,8 +131,8 @@ function Cart({
                   className="cart-order"
                   type="button"
                   onClick={async () => {
-                    const username = getUserName();
-                    if (!username) return;
+                    const telegramUser = getTelegramUser();
+                    if (!telegramUser) return;
 
                     if (!deliveryTime) {
                       setIsTimePickerOpen(true);
@@ -141,22 +141,20 @@ function Cart({
 
                     try {
                       const response = await fetch(
-                        "http://localhost:3000/api/orders",
+                        "https://tg-shop-back-end.vercel.app/api/orders",
                         {
                           method: "POST",
                           headers: {
                             "Content-Type": "application/json",
                           },
                           body: JSON.stringify({
+                            initData: window.Telegram?.WebApp?.initData || "",
                             items: cart.map(({ product, variant, qty }) => ({
                               productId: product.id,
                               variantId: variant?.id || product.variants[0]?.id,
                               quantity: qty,
                             })),
-                            userData: {
-                              name: username,
-                              deliveryTime,
-                            },
+                            deliveryTime,
                           }),
                         },
                       );
@@ -164,21 +162,23 @@ function Cart({
                       const data = await response.json();
 
                       if (!response.ok) {
-                        window.Telegram?.WebApp.showAlert(
-                          `Ошибка: ${data.message}`,
+                        throw new Error(
+                          data.message || "Неизвестная ошибка сервера",
                         );
-                        return;
                       }
 
-                      window.Telegram?.WebApp.showAlert(
-                        `Заказ создан! ID: ${data.id}`,
-                      );
+                      const alertMessage =
+                        `Заказ создан! ID: ${data.id} \n` + response.status ===
+                        202
+                          ? `Напишите менеджеру ID закза чтобы получить координаты и видео с места встречи.`
+                          : ``;
+                      window.Telegram?.WebApp.showAlert(alertMessage);
                       setDeliveryTime(null);
                       onClear();
                     } catch (err) {
                       console.error("Ошибка отправки заказа:", err);
                       window.Telegram?.WebApp.showAlert(
-                        `Ошибка: ${err.message}`,
+                        `Ошибка: ${err.message}\n Напишите менеджеру, и он поможет решить сложившуюсь ситуацию`,
                       );
                     }
                   }}
