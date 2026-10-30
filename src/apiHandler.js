@@ -1,7 +1,9 @@
 import Product from "./Product";
 
 async function getAllProductsData() {
-  const products = await fetch("http://localhost:3000/api/products");
+  const products = await fetch(
+    "https://tg-shop-back-end.vercel.app/api/products",
+  );
   const data = await products.json();
   return data;
 }

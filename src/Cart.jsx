@@ -141,7 +141,7 @@ function Cart({
 
                     try {
                       const response = await fetch(
-                        "http://localhost:3000/api/orders",
+                        "https://tg-shop-back-end.vercel.app/api/orders",
                         {
                           method: "POST",
                           headers: {
