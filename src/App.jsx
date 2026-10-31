@@ -11,21 +11,29 @@ import {
 
 function App({ cart = [], setCart, isCartOpen = false, onCloseCart }) {
   const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
   useEffect(() => {
-    setProducts([]);
-    async function f() {
-      try {
-        const data = await getAllProductsData();
-        const formattedProducts = dataToProducts(data);
-        setProducts(formattedProducts);
-      } catch (error) {
-        console.error("Ошибка загрузки:", error);
-      }
-    }
-    try {
-      f();
-    } catch (error) {}
+    let isCurrent = true;
+
+    getAllProductsData()
+      .then((data) => {
+        if (isCurrent) setProducts(dataToProducts(data));
+      })
+      .catch((error) => {
+        if (isCurrent) {
+          setLoadError(error.message);
+          console.error("Ошибка загрузки товаров:", error);
+        }
+      })
+      .finally(() => {
+        if (isCurrent) setIsLoading(false);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
   }, []);
 
   const filters = useMemo(() => {
@@ -123,6 +131,12 @@ function App({ cart = [], setCart, isCartOpen = false, onCloseCart }) {
     [cart],
   );
 
+  const visibleProducts =
+    selectedFilter === "all"
+      ? filters.flatMap((filter) => filter.products)
+      : (filters.find((filter) => filter.name === selectedFilter)?.products ??
+        []);
+
   return (
     <>
       <Filters
@@ -131,33 +145,28 @@ function App({ cart = [], setCart, isCartOpen = false, onCloseCart }) {
         onChange={setSelectedFilter}
       />
       <div id="product_display">
-        {(() => {
-          if (selectedFilter === "all") {
-            const all = filters.flatMap((f) => f.products);
-            return all.map((p, i) => (
-              <ProductCart
-                key={p.id ?? `${p.text}-${i}`}
-                product={p}
-                qty={p.variants.reduce((sum, v) => sum + getQty(p, v), 0)}
-                getVariantQty={getVariantQty}
-                onAdd={addToCart}
-                onRemove={removeFromCart}
-              />
-            ));
-          }
-          const group = filters.find((f) => f.name === selectedFilter);
-          const list = group ? group.products : [];
-          return list.map((p, i) => (
+        {isLoading ? (
+          <p className="catalog-state" role="status">
+            Загружаем товары...
+          </p>
+        ) : loadError ? (
+          <p className="catalog-state" role="alert">
+            Не удалось загрузить каталог: {loadError}
+          </p>
+        ) : visibleProducts.length === 0 ? (
+          <p className="catalog-state">В каталоге пока нет товаров.</p>
+        ) : (
+          visibleProducts.map((p) => (
             <ProductCart
-              key={p.id ?? `${p.text}-${i}`}
+              key={p.id}
               product={p}
               qty={p.variants.reduce((sum, v) => sum + getQty(p, v), 0)}
               getVariantQty={getVariantQty}
               onAdd={addToCart}
               onRemove={removeFromCart}
             />
-          ));
-        })()}
+          ))
+        )}
       </div>
 
       <Cart

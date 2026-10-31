@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./styles/Cart.css";
 import TimeChooseDisplay from "./TimeChooseDispaly";
+import { API_BASE_URL } from "./apiHandler.js";
 
 function Cart({
   cart = [],
@@ -141,7 +142,7 @@ function Cart({
 
                     try {
                       const response = await fetch(
-                        "https://tg-shop-back-end.vercel.app/api/orders",
+                        `${API_BASE_URL}/orders`,
                         {
                           method: "POST",
                           headers: {

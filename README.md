@@ -1,5 +1,16 @@
 # React + Vite
 
+## API server
+
+The frontend loads products and submits orders through `VITE_API_URL`. The value
+must be the server API root, including `/api`. It defaults to
+`https://tg-shop-back-end.vercel.app/api`. To use another test server, set this
+in the frontend root `.env.local` and restart Vite:
+
+```env
+VITE_API_URL=https://your-test-server.example/api
+```
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:
