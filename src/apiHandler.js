@@ -1,10 +1,20 @@
 import Product from "./Product";
 
+const API_BASE_URL = (
+  import.meta.env.VITE_API_URL || "https://tg-shop-back-end.vercel.app/api"
+).replace(/\/+$/, "");
+
 async function getAllProductsData() {
-  const products = await fetch(
-    "https://tg-shop-back-end.vercel.app/api/products",
-  );
-  const data = await products.json();
+  const response = await fetch(`${API_BASE_URL}/products`);
+  if (!response.ok) {
+    throw new Error(`Ошибка загрузки товаров: ${response.status}`);
+  }
+
+  const data = await response.json();
+  if (!Array.isArray(data)) {
+    throw new Error("Сервер вернул некорректный список товаров");
+  }
+
   return data;
 }
 
@@ -18,4 +28,9 @@ function filterProductsByIdType(idType, array) {
   return array.filter((e) => e.id && e.id.includes(idType));
 }
 
-export { getAllProductsData, filterProductsByIdType, dataToProducts };
+export {
+  API_BASE_URL,
+  getAllProductsData,
+  filterProductsByIdType,
+  dataToProducts,
+};

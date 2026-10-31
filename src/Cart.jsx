@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./styles/Cart.css";
 import TimeChooseDisplay from "./TimeChooseDispaly";
+import { API_BASE_URL } from "./apiHandler.js";
 
 function Cart({
   cart = [],
@@ -14,6 +15,7 @@ function Cart({
 }) {
   const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
   const [deliveryTime, setDeliveryTime] = useState(null);
+  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
 
   if (!isCartOpen) return null;
 
@@ -130,7 +132,10 @@ function Cart({
                 <button
                   className="cart-order"
                   type="button"
+                  disabled={isSubmittingOrder}
                   onClick={async () => {
+                    if (isSubmittingOrder) return;
+
                     const telegramUser = getTelegramUser();
                     if (!telegramUser) return;
 
@@ -139,25 +144,23 @@ function Cart({
                       return;
                     }
 
+                    setIsSubmittingOrder(true);
                     try {
-                      const response = await fetch(
-                        "https://tg-shop-back-end.vercel.app/api/orders",
-                        {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify({
-                            initData: window.Telegram?.WebApp?.initData || "",
-                            items: cart.map(({ product, variant, qty }) => ({
-                              productId: product.id,
-                              variantId: variant?.id || product.variants[0]?.id,
-                              quantity: qty,
-                            })),
-                            deliveryTime,
-                          }),
+                      const response = await fetch(`${API_BASE_URL}/orders`, {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
                         },
-                      );
+                        body: JSON.stringify({
+                          initData: window.Telegram?.WebApp?.initData || "",
+                          items: cart.map(({ product, variant, qty }) => ({
+                            productId: product.id,
+                            variantId: variant?.id || product.variants[0]?.id,
+                            quantity: qty,
+                          })),
+                          deliveryTime,
+                        }),
+                      });
 
                       const data = await response.json();
 
@@ -168,18 +171,21 @@ function Cart({
                       }
 
                       const alertMessage =
-                        `Заказ создан! ID: ${data.id} \n` + response.status ===
-                        202
-                          ? `Напишите менеджеру ID закза чтобы получить координаты и видео с места встречи.`
-                          : ``;
+                        `Заказ создан! ID: ${data.id} \n` +
+                        (response.status === 202
+                          ? "Напишите менеджеру ID заказа, чтобы получить координаты и видео с места встречи."
+                          : "");
                       window.Telegram?.WebApp.showAlert(alertMessage);
                       setDeliveryTime(null);
                       onClear();
+                      onCloseCart();
                     } catch (err) {
                       console.error("Ошибка отправки заказа:", err);
                       window.Telegram?.WebApp.showAlert(
                         `Ошибка: ${err.message}\n Напишите менеджеру, и он поможет решить сложившуюсь ситуацию`,
                       );
+                    } finally {
+                      setIsSubmittingOrder(false);
                     }
                   }}
                 >

@@ -41,6 +41,12 @@
     padding: 1rem 0 2rem;
 }
 
+.catalog-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #f5f5f5;
+}
+
 .product-card-wrapper {
     position: relative;
 }
