@@ -171,13 +171,14 @@ function Cart({
                       }
 
                       const alertMessage =
-                        `Заказ создан! ID: ${data.id} \n` + response.status ===
-                        202
-                          ? `Напишите менеджеру ID закза чтобы получить координаты и видео с места встречи.`
-                          : ``;
+                        `Заказ создан! ID: ${data.id} \n` +
+                        (response.status === 202
+                          ? "Напишите менеджеру ID заказа, чтобы получить координаты и видео с места встречи."
+                          : "");
                       window.Telegram?.WebApp.showAlert(alertMessage);
                       setDeliveryTime(null);
                       onClear();
+                      onCloseCart();
                     } catch (err) {
                       console.error("Ошибка отправки заказа:", err);
                       window.Telegram?.WebApp.showAlert(
