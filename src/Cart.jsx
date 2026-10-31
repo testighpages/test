@@ -15,6 +15,7 @@ function Cart({
 }) {
   const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
   const [deliveryTime, setDeliveryTime] = useState(null);
+  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
 
   if (!isCartOpen) return null;
 
@@ -131,7 +132,10 @@ function Cart({
                 <button
                   className="cart-order"
                   type="button"
+                  disabled={isSubmittingOrder}
                   onClick={async () => {
+                    if (isSubmittingOrder) return;
+
                     const telegramUser = getTelegramUser();
                     if (!telegramUser) return;
 
@@ -140,25 +144,23 @@ function Cart({
                       return;
                     }
 
+                    setIsSubmittingOrder(true);
                     try {
-                      const response = await fetch(
-                        `${API_BASE_URL}/orders`,
-                        {
-                          method: "POST",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify({
-                            initData: window.Telegram?.WebApp?.initData || "",
-                            items: cart.map(({ product, variant, qty }) => ({
-                              productId: product.id,
-                              variantId: variant?.id || product.variants[0]?.id,
-                              quantity: qty,
-                            })),
-                            deliveryTime,
-                          }),
+                      const response = await fetch(`${API_BASE_URL}/orders`, {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
                         },
-                      );
+                        body: JSON.stringify({
+                          initData: window.Telegram?.WebApp?.initData || "",
+                          items: cart.map(({ product, variant, qty }) => ({
+                            productId: product.id,
+                            variantId: variant?.id || product.variants[0]?.id,
+                            quantity: qty,
+                          })),
+                          deliveryTime,
+                        }),
+                      });
 
                       const data = await response.json();
 
@@ -181,6 +183,8 @@ function Cart({
                       window.Telegram?.WebApp.showAlert(
                         `Ошибка: ${err.message}\n Напишите менеджеру, и он поможет решить сложившуюсь ситуацию`,
                       );
+                    } finally {
+                      setIsSubmittingOrder(false);
                     }
                   }}
                 >
