@@ -77,8 +77,11 @@ function ProductCart({ product, qty = 0, getVariantQty, onAdd, onRemove }) {
       >
         <img src={imgSrc} alt={text} className="product-card-image" />
         <p className="product-card-title">{text}</p>
-        <div className="product-card-price-box">
-          <span>{variants[0].price} ₽</span>
+        <div className="product-card-meta">
+          <span className="product-card-price-box">{variants[0].price} ₽</span>
+          <span className="product-card-add" aria-hidden="true">
+            +
+          </span>
         </div>
       </button>
 

@@ -26,6 +26,7 @@ function ShopApp() {
         setCart={setCart}
         isCartOpen={isCartOpen}
         onCloseCart={() => setIsCartOpen(false)}
+        onOpenCart={() => setIsCartOpen(true)}
       />
     </>
   );

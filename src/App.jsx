@@ -9,7 +9,13 @@ import {
   getAllProductsData,
 } from "./apiHandler.js";
 
-function App({ cart = [], setCart, isCartOpen = false, onCloseCart }) {
+function App({
+  cart = [],
+  setCart,
+  isCartOpen = false,
+  onCloseCart,
+  onOpenCart,
+}) {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -139,6 +145,10 @@ function App({ cart = [], setCart, isCartOpen = false, onCloseCart }) {
 
   return (
     <>
+      <section className="catalog-heading">
+        <p className="catalog-eyebrow">BOTON SHOP</p>
+        <h2>Каталог</h2>
+      </section>
       <Filters
         filters={filters}
         selected={selectedFilter}
@@ -168,6 +178,14 @@ function App({ cart = [], setCart, isCartOpen = false, onCloseCart }) {
           ))
         )}
       </div>
+
+      {totalItems > 0 && (
+        <button className="cart-dock" type="button" onClick={onOpenCart}>
+          <span className="cart-dock-count">{totalItems}</span>
+          <span className="cart-dock-label">Перейти в корзину</span>
+          <strong>{totalPrice} ₽</strong>
+        </button>
+      )}
 
       <Cart
         cart={cart}

@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./styles/Cart.css";
 import TimeChooseDisplay from "./TimeChooseDispaly";
 import { API_BASE_URL } from "./apiHandler.js";
+import clockImg from "./assets/image.png";
 
 function Cart({
   cart = [],
@@ -120,6 +121,7 @@ function Cart({
                     className="cart-time-button"
                     onClick={() => setIsTimePickerOpen(true)}
                   >
+                    🕒
                     {formatDeliveryTime(deliveryTime)}
                   </button>
                 </div>
