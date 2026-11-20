@@ -91,3 +91,23 @@ code {
     padding: 4px 8px;
     background: var(--code-bg);
 }
+
+:root {
+    color: #f2f5f3;
+    background: #090b0a;
+    color-scheme: dark;
+}
+
+body {
+    background: #090b0a;
+}
+
+#root {
+    background: #0d100e;
+}
+
+@media (min-width: 700px) {
+    #root {
+        border-inline-color: #202520;
+    }
+}

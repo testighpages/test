@@ -70,3 +70,20 @@
     font-size: 10px;
     font-weight: 700;
 }
+
+.header {
+    border-bottom-color: #242925;
+    background: rgba(13, 16, 14, 0.94);
+}
+
+.header-title {
+    color: #f2f5f3;
+}
+
+.header-cart-button {
+    background: #64f7a7;
+}
+
+.header-cart-badge {
+    border-color: #0d100e;
+}
