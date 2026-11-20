@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./styles/Cart.css";
-import TimeChooseDisplay from "./TimeChooseDispaly";
+// import TimeChooseDisplay from "./TimeChooseDispaly";
 import { API_BASE_URL } from "./apiHandler.js";
 import clockImg from "./assets/image.png";
 
@@ -14,8 +14,8 @@ function Cart({
   totalItems = 0,
   totalPrice = 0,
 }) {
-  const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
-  const [deliveryTime, setDeliveryTime] = useState(null);
+  // const [isTimePickerOpen, setIsTimePickerOpen] = useState(false);
+  // const [deliveryTime, setDeliveryTime] = useState(null);
   const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
 
   if (!isCartOpen) return null;
@@ -39,15 +39,15 @@ function Cart({
     return user;
   };
 
-  const handleTimeSelect = (selectedTime) => {
-    setDeliveryTime(selectedTime);
-    setIsTimePickerOpen(false);
-  };
+  // const handleTimeSelect = (selectedTime) => {
+  //   setDeliveryTime(selectedTime);
+  //   setIsTimePickerOpen(false);
+  // };
 
-  const formatDeliveryTime = (time) => {
-    if (!time) return "Не выбрано";
-    return `${String(time.hours).padStart(2, "0")}:${String(time.minutes).padStart(2, "0")}`;
-  };
+  // const formatDeliveryTime = (time) => {
+  //   if (!time) return "Не выбрано";
+  //   return `${String(time.hours).padStart(2, "0")}:${String(time.minutes).padStart(2, "0")}`;
+  // };
 
   return (
     <>
@@ -114,7 +114,9 @@ function Cart({
                   <span>Итого</span>
                   <strong>{totalPrice} ₽</strong>
                 </div>
-                <div className="cart-delivery-row">
+                {
+                  //отображение времени заказа!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                  /* <div className="cart-delivery-row">
                   <span>Время</span>
                   <button
                     type="button"
@@ -124,7 +126,8 @@ function Cart({
                     🕒
                     {formatDeliveryTime(deliveryTime)}
                   </button>
-                </div>
+                </div> */
+                }
               </div>
 
               <div className="cart-actions">
@@ -141,10 +144,10 @@ function Cart({
                     const telegramUser = getTelegramUser();
                     if (!telegramUser) return;
 
-                    if (!deliveryTime) {
-                      setIsTimePickerOpen(true);
-                      return;
-                    }
+                    // if (!deliveryTime) {
+                    //   setIsTimePickerOpen(true);
+                    //   return;
+                    // }
 
                     setIsSubmittingOrder(true);
                     try {
@@ -160,7 +163,7 @@ function Cart({
                             variantId: variant?.id || product.variants[0]?.id,
                             quantity: qty,
                           })),
-                          deliveryTime,
+                          // deliveryTime,
                         }),
                       });
 
@@ -173,12 +176,10 @@ function Cart({
                       }
 
                       const alertMessage =
-                        `Заказ создан! ID: ${data.id} \n` +
-                        (response.status === 202
-                          ? "Напишите менеджеру ID заказа, чтобы получить координаты и видео с места встречи."
-                          : "");
+                        `Заказ создан! Номер заказа: ${data.id}\n` +
+                        "Спасибо за заказ наш менеджер скоро с вами свяжется";
                       window.Telegram?.WebApp.showAlert(alertMessage);
-                      setDeliveryTime(null);
+                      // setDeliveryTime(null);
                       onClear();
                       onCloseCart();
                     } catch (err) {
@@ -199,12 +200,14 @@ function Cart({
         </div>
       </div>
 
+      {/*
       <TimeChooseDisplay
         isOpen={isTimePickerOpen}
         onClose={() => setIsTimePickerOpen(false)}
         onSelect={handleTimeSelect}
         selectedTime={deliveryTime}
       />
+      */}
     </>
   );
 }
